@@ -59,6 +59,7 @@ export interface AppSettings {
 }
 
 export interface AppState {
+  lastActiveDate: string;
   theme: ThemeMode;
   morning: MorningState;
   sleep: SleepState;

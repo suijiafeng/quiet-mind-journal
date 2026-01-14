@@ -29,7 +29,17 @@ const defaultSleepEntries: SleepEntry[] = [
   { date: '03-28', durationMinutes: 450, sleepTime: '23:12', wakeTime: '06:42' },
 ];
 
+function todayKey(date = new Date()) {
+  const formatter = new Intl.DateTimeFormat('sv-SE', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+  return formatter.format(date);
+}
+
 const initialState: AppState = {
+  lastActiveDate: todayKey(),
   theme: 'elegant',
   morning: { checkedIn: false, history: ['2026-03-24', '2026-03-25', '2026-03-26', '2026-03-27'] },
   sleep: { sleepAt: '23:12', wakeAt: '06:42', durationMinutes: 450, last7Days: defaultSleepEntries },
@@ -56,15 +66,18 @@ const initialState: AppState = {
 function normalizeAppState(state: AppState): AppState {
   const requiredIds = ['morning', 'sleep', 'work', ...state.customCheckIns.map((item) => item.id)];
   const existingOrder = Array.isArray(state.checkInOrder) ? state.checkInOrder : [];
-  return { ...state, checkInOrder: [...existingOrder.filter((id) => requiredIds.includes(id)), ...requiredIds.filter((id) => !existingOrder.includes(id))] };
+  return {
+    ...state,
+    lastActiveDate: state.lastActiveDate ?? todayKey(),
+    checkInOrder: [
+      ...existingOrder.filter((id) => requiredIds.includes(id)),
+      ...requiredIds.filter((id) => !existingOrder.includes(id)),
+    ],
+  };
 }
 
 function nowTime() {
   return new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', hour12: false });
-}
-
-function todayKey() {
-  return new Date().toISOString().slice(0, 10);
 }
 
 function calculateCompletionRate(completed: number, total: number) {
@@ -93,7 +106,8 @@ function exportReport(title: string, lines: string[]) {
 function AppRoutes() {
   const [state, setState] = useState<AppState>(() => {
     const saved = window.localStorage.getItem(storageKey);
-    return saved ? normalizeAppState(JSON.parse(saved) as AppState) : initialState;
+    const parsed = saved ? (JSON.parse(saved) as AppState) : initialState;
+    return rolloverState(parsed, todayKey());
   });
   const [period, setPeriod] = useState<'week' | 'month' | 'quarter'>('week');
 
@@ -101,6 +115,11 @@ function AppRoutes() {
     document.body.dataset.theme = state.theme;
     window.localStorage.setItem(storageKey, JSON.stringify(state));
   }, [state]);
+
+  useEffect(() => {
+    const activeDate = todayKey();
+    setState((current) => (current.lastActiveDate === activeDate ? current : rolloverState(current, activeDate)));
+  }, []);
 
   const completedWorkTasks = state.work.tasks.filter((task) => task.completed).length;
 
