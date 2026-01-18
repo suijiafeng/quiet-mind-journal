@@ -41,62 +41,68 @@
 - **自定义打卡分析页**：沿用统一的数据展示风格
 
 ### 我的页面
-
-- 打卡记录
-- 勋章墙
-- 设置入口
-- 意见反馈
+- 打卡记录 · 勋章墙 · 设置入口 · 意见反馈
 
 ### 设置
-
-- 早起提醒时间
-- 睡眠提醒时间
-- 工作计划提醒时间
-- 主题切换
+- 早起 / 睡眠 / 工作计划三类提醒时间
+- 主题切换（淡青 / 雅棕）
 - 本地数据备份
+
+---
 
 ## 视觉风格
 
-- 米白底色
-- 淡青 / 雅棕双主题
+- 米白底色，低干扰留白设计
+- 淡青 / 雅棕双主题可切换
 - 中式字体搭配简约线条与圆角卡片
 - 避免强刺激色彩和复杂装饰
 
+---
+
 ## 页面截图
 
-### 首页
+<table>
+  <tr>
+    <td align="center"><b>首页</b></td>
+    <td align="center"><b>分析中心</b></td>
+  </tr>
+  <tr>
+    <td><img src="./screenshot/首页.png" alt="首页" width="100%"/></td>
+    <td><img src="./screenshot/分析.png" alt="分析中心" width="100%"/></td>
+  </tr>
+  <tr>
+    <td align="center"><b>我的页面</b></td>
+    <td align="center"><b>打卡记录</b></td>
+  </tr>
+  <tr>
+    <td><img src="./screenshot/我的.png" alt="我的页面" width="100%"/></td>
+    <td><img src="./screenshot/打卡记录.png" alt="打卡记录" width="100%"/></td>
+  </tr>
+  <tr>
+    <td align="center"><b>勋章墙</b></td>
+    <td align="center"><b>设置页</b></td>
+  </tr>
+  <tr>
+    <td><img src="./screenshot/功勋墙.png" alt="勋章墙" width="100%"/></td>
+    <td><img src="./screenshot/设置.png" alt="设置页" width="100%"/></td>
+  </tr>
+</table>
 
-![首页](./screenshot/首页.png)
-
-### 分析中心
-
-![分析中心](./screenshot/分析.png)
-
-### 我的页面
-
-![我的页面](./screenshot/我的.png)
-
-### 打卡记录
-
-![打卡记录](./screenshot/打卡记录.png)
-
-### 勋章墙
-
-![勋章墙](./screenshot/功勋墙.png)
-
-### 设置页
-
-![设置页](./screenshot/设置.png)
+---
 
 ## 技术栈
 
-- React 19
-- TypeScript
-- React Router
-- Vite
-- Tailwind CSS v4
-- Lucide React
-- Motion
+| 技术 | 说明 |
+|------|------|
+| React 19 | 核心 UI 框架 |
+| TypeScript | 类型安全 |
+| React Router | 路由管理 |
+| Vite | 构建工具 |
+| Tailwind CSS v4 | 样式系统 |
+| Lucide React | 图标库 |
+| Motion | 动画效果 |
+
+---
 
 ## 项目结构
 
