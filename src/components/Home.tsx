@@ -7,6 +7,11 @@ interface HomeProps {
     completed: number;
     total: number;
   };
+  suggestion?: {
+    title: string;
+    detail: string;
+    path: string;
+  };
   cards: Array<{
     key: string;
     title: string;
@@ -30,7 +35,7 @@ const iconMap = {
   spark: Sparkles,
 };
 
-export default function Home({ progress, cards }: HomeProps) {
+export default function Home({ progress, suggestion, cards }: HomeProps) {
   const progressRate = (progress.completed / progress.total) * 100;
 
   return (
@@ -116,6 +121,19 @@ export default function Home({ progress, cards }: HomeProps) {
           <ChevronRight className="h-4 w-4" />
         </Link>
       </section>
+
+      {suggestion ? (
+        <Link to={suggestion.path} className="page-card block p-5">
+          <div className="mb-2 flex items-center justify-between">
+            <p className="serif-title text-lg text-[color:var(--color-text)]">下一步建议</p>
+            <span className="rounded-full bg-[color:var(--color-card-green)] px-3 py-1 text-xs text-[color:var(--color-accent-strong)]">
+              立即前往
+            </span>
+          </div>
+          <p className="text-base text-[color:var(--color-text)]">{suggestion.title}</p>
+          <p className="mt-2 text-sm leading-7 text-[color:var(--color-muted)]">{suggestion.detail}</p>
+        </Link>
+      ) : null}
     </div>
   );
 }
