@@ -1,6 +1,7 @@
 import { ArrowLeft, Download } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import type { MainCheckInType, SleepEntry } from '../types';
+import WeeklyHeatCalendar, { buildHeatColumnsFromSequence } from './WeeklyHeatCalendar';
 
 interface AnalysisDetailPageProps {
   morningRate: number;
@@ -63,7 +64,7 @@ export default function AnalysisDetailPage({
   const radialCircumference = 2 * Math.PI * 34;
   const radialOffset = radialCircumference * (1 - radialValue / 100);
   const trendPoints = summaries.bars.map((value, index) => `${20 + index * 46},${138 - value}`).join(' ');
-  const heatTone = ['bg-[color:var(--color-surface-soft)]', 'bg-[color:var(--color-card-green)]', 'bg-[color:var(--color-accent-strong)]'];
+  const heatColumns = buildHeatColumnsFromSequence(summaries.heatmap);
 
   return (
     <div className="space-y-6">
@@ -125,17 +126,7 @@ export default function AnalysisDetailPage({
           <p className="mb-2 serif-title text-lg">规律总结</p>
           <p className="text-sm leading-7 text-[color:var(--color-muted)]">{hidden ? '隐私模式开启时不展示详细数值，已保留规律总结。' : summaries.summary}</p>
         </div>
-        <div className="page-card p-5">
-          <p className="mb-4 text-sm text-[color:var(--color-muted)]">周历热力</p>
-          <div className="grid grid-cols-7 gap-2">
-            {summaries.heatmap.map((level, index) => (
-              <div key={index} className="text-center">
-                <div className={`mx-auto h-11 w-11 rounded-[14px] ${heatTone[hidden ? 0 : level - 1]}`} />
-                <p className="mt-2 text-xs text-[color:var(--color-muted)]">{['一', '二', '三', '四', '五', '六', '日'][index]}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+        <WeeklyHeatCalendar columns={heatColumns} hidden={hidden} caption="最近 4 周" />
       </section>
 
       <button
