@@ -1,6 +1,7 @@
 import { ArrowLeft, Download } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import type { AppState } from '../types';
+import WeeklyHeatCalendar, { buildHeatColumnsFromDates } from './WeeklyHeatCalendar';
 
 interface CustomAnalysisPageProps {
   items: AppState['customCheckIns'];
@@ -22,8 +23,7 @@ export default function CustomAnalysisPage({ items, hidden, onExport }: CustomAn
   const circumference = 2 * Math.PI * 34;
   const offset = circumference * (1 - completionRate / 100);
   const trendPoints = bars.map((value, index) => `${20 + index * 46},${138 - value}`).join(' ');
-  const heatmap = [1, 2, 2, 3, 2, 3, Math.min(3, Math.max(1, Math.round(item.streak / 2)))];
-  const heatTone = ['bg-[color:var(--color-surface-soft)]', 'bg-[color:var(--color-card-green)]', 'bg-[color:var(--color-accent-strong)]'];
+  const heatColumns = buildHeatColumnsFromDates(item.history);
 
   return (
     <div className="space-y-6">
@@ -91,17 +91,7 @@ export default function CustomAnalysisPage({ items, hidden, onExport }: CustomAn
             {hidden ? '隐私模式开启时不展示详细记录，仅保留概括信息。' : `${item.name}近期完成节奏${item.completedToday ? '较稳定' : '仍可加强'}，建议继续用备注记录时长与感受，便于后续复盘。`}
           </p>
         </div>
-        <div className="page-card p-5">
-          <p className="mb-4 text-sm text-[color:var(--color-muted)]">周历热力</p>
-          <div className="grid grid-cols-7 gap-2">
-            {heatmap.map((level, index) => (
-              <div key={index} className="text-center">
-                <div className={`mx-auto h-11 w-11 rounded-[14px] ${heatTone[hidden ? 0 : level - 1]}`} />
-                <p className="mt-2 text-xs text-[color:var(--color-muted)]">{['一', '二', '三', '四', '五', '六', '日'][index]}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+        <WeeklyHeatCalendar columns={heatColumns} hidden={hidden} caption="按历史记录回看" />
       </section>
 
       <button
