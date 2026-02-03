@@ -1,4 +1,4 @@
-import { ArrowLeft, Download } from 'lucide-react';
+import { ArrowLeft, Download, RotateCcw, Upload } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import type { AppState } from '../types';
 
@@ -7,9 +7,11 @@ interface SettingsPageProps {
   onUpdate: (updater: Partial<AppState>) => void;
   onUpdateSettings: (key: keyof AppState['settings'], value: string | boolean) => void;
   onBackup: () => void;
+  onImport: (file: File | null) => void;
+  onReset: () => void;
 }
 
-export default function SettingsPage({ state, onUpdate, onUpdateSettings, onBackup }: SettingsPageProps) {
+export default function SettingsPage({ state, onUpdate, onUpdateSettings, onBackup, onImport, onReset }: SettingsPageProps) {
   return (
     <div className="space-y-6">
       <header className="flex items-center justify-between px-1">
@@ -54,10 +56,31 @@ export default function SettingsPage({ state, onUpdate, onUpdateSettings, onBack
       </section>
 
       <section className="page-card p-5">
-        <button type="button" onClick={onBackup} className="flex w-full items-center justify-between rounded-[18px] border border-[var(--color-line)] px-4 py-3">
-          <span>立即备份到本地</span>
-          <Download className="h-4 w-4 text-[color:var(--color-muted)]" />
-        </button>
+        <div className="space-y-3">
+          <button type="button" onClick={onBackup} className="flex w-full items-center justify-between rounded-[18px] border border-[var(--color-line)] px-4 py-3">
+            <span>立即备份到本地</span>
+            <Download className="h-4 w-4 text-[color:var(--color-muted)]" />
+          </button>
+
+          <label className="flex cursor-pointer items-center justify-between rounded-[18px] border border-[var(--color-line)] px-4 py-3">
+            <span>导入备份数据</span>
+            <Upload className="h-4 w-4 text-[color:var(--color-muted)]" />
+            <input
+              type="file"
+              accept="application/json"
+              className="hidden"
+              onChange={(event) => {
+                onImport(event.target.files?.[0] ?? null);
+                event.target.value = '';
+              }}
+            />
+          </label>
+
+          <button type="button" onClick={onReset} className="flex w-full items-center justify-between rounded-[18px] border border-[var(--color-line)] px-4 py-3 text-[#b34c32]">
+            <span>重置为默认数据</span>
+            <RotateCcw className="h-4 w-4" />
+          </button>
+        </div>
       </section>
     </div>
   );
