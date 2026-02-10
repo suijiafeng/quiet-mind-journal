@@ -15,7 +15,7 @@ import CustomAnalysisPage from './components/CustomAnalysisPage';
 import HistoryPage from './components/HistoryPage';
 import MedalPage from './components/MedalPage';
 import FeedbackPage from './components/FeedbackPage';
-import type { AppState, CheckInFrequency, CustomCheckIn, SleepEntry } from './types';
+import type { AppState, CustomCheckIn, SleepEntry, WorkTask } from './types';
 
 const storageKey = 'quiet-mind-journal-state';
 
@@ -127,7 +127,10 @@ function AppRoutes() {
     const id = `${Date.now()}`;
     setState((current) => ({
       ...current,
-      customCheckIns: [...current.customCheckIns, { id, name: payload.name, icon: payload.icon, frequency: payload.frequency, completedToday: false, streak: 0, history: [], note: '可添加今日完成备注。' }],
+      customCheckIns: [
+        ...current.customCheckIns,
+        { id, name: payload.name, icon: payload.icon, frequency: payload.frequency, completedToday: false, streak: 0, history: [], note: '可添加今日完成备注。' },
+      ],
       checkInOrder: [...current.checkInOrder, id],
     }));
   };
