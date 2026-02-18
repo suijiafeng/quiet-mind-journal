@@ -84,6 +84,79 @@ function calculateCompletionRate(completed: number, total: number) {
   return total ? Math.round((completed / total) * 100) : 0;
 }
 
+function uniqueSortedDates(dates: string[]) {
+  return Array.from(new Set(dates)).sort((left, right) => left.localeCompare(right));
+}
+
+function subtractDays(dateText: string, amount: number) {
+  const date = new Date(`${dateText}T00:00:00`);
+  date.setDate(date.getDate() - amount);
+  return todayKey(date);
+}
+
+function getSleepDurationMinutes(sleepAt?: string, wakeAt?: string) {
+  if (!sleepAt || !wakeAt) return undefined;
+  const [sleepHour, sleepMinute] = sleepAt.split(':').map(Number);
+  const [wakeHour, wakeMinute] = wakeAt.split(':').map(Number);
+  const sleepMinutes = sleepHour * 60 + sleepMinute;
+  let wakeMinutes = wakeHour * 60 + wakeMinute;
+  if (wakeMinutes <= sleepMinutes) {
+    wakeMinutes += 24 * 60;
+  }
+  return wakeMinutes - sleepMinutes;
+}
+
+function createDefaultWorkTasks(): WorkTask[] {
+  return [
+    { id: `${Date.now()}-1`, text: '梳理今天最重要的 3 件事', completed: false },
+    { id: `${Date.now()}-2`, text: '预留一段不被打断的专注时间', completed: false },
+    { id: `${Date.now()}-3`, text: '下班前复盘完成情况与阻塞点', completed: false },
+  ];
+}
+
+function rolloverState(state: AppState, activeDate: string) {
+  if (state.lastActiveDate === activeDate) {
+    return normalizeAppState(state);
+  }
+
+  const yesterday = subtractDays(activeDate, 1);
+  const nextCustomCheckIns = state.customCheckIns.map((item) => {
+    const completedYesterday = item.history.includes(yesterday);
+    const shouldResetStreak = item.frequency === 'daily' && !completedYesterday;
+    return {
+      ...item,
+      completedToday: false,
+      checkedInAt: undefined,
+      note: shouldResetStreak ? '新的一天开始了，继续保持节奏。' : item.note,
+      streak: shouldResetStreak ? 0 : item.streak,
+    };
+  });
+
+  return normalizeAppState({
+    ...state,
+    lastActiveDate: activeDate,
+    morning: {
+      ...state.morning,
+      checkedIn: state.morning.history.includes(activeDate),
+      checkedInAt: state.morning.history.includes(activeDate) ? state.morning.checkedInAt : undefined,
+    },
+    sleep: {
+      ...state.sleep,
+      sleepAt: undefined,
+      wakeAt: undefined,
+      durationMinutes: undefined,
+    },
+    work: {
+      ...state.work,
+      checkedIn: false,
+      checkedInAt: undefined,
+      completionRate: 0,
+      tasks: createDefaultWorkTasks(),
+    },
+    customCheckIns: nextCustomCheckIns,
+  });
+}
+
 function downloadFile(filename: string, content: string, mimeType: string) {
   const blob = new Blob([content], { type: mimeType });
   const url = URL.createObjectURL(blob);
