@@ -231,6 +231,24 @@ function AppRoutes() {
     deleteCustomCheckIn(id);
   };
 
+  const importBackup = async (file: File | null) => {
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text) as AppState;
+      setState(rolloverState(parsed, todayKey()));
+    } catch {
+      window.alert('导入失败，请确认备份文件格式正确。');
+    }
+  };
+
+  const resetAppState = () => {
+    if (!window.confirm('确认重置为默认数据吗？当前本地记录会被覆盖。')) {
+      return;
+    }
+    setState(rolloverState(initialState, todayKey()));
+  };
+
   const analysisCards = [
     { title: '早起', value: period === 'week' ? '本周早起率 80%' : period === 'month' ? '本月早起率 76%' : '本季度早起率 78%', detail: '平均早起时间 06:38', path: '/analysis/morning', tone: 'green' as const, chart: [58, 74, 81, 72, 84], progress: 80 },
     { title: '睡眠', value: period === 'week' ? '平均睡眠 7.5 小时' : period === 'month' ? '平均睡眠 7.3 小时' : '平均睡眠 7.4 小时', detail: '入睡时间较上周提前 12 分钟', path: '/analysis/sleep', tone: 'brown' as const, chart: [62, 68, 64, 78, 82], progress: 75 },
