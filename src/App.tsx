@@ -258,12 +258,12 @@ function AppRoutes() {
   const historyItems = useMemo(
     () =>
       [
-        ...state.morning.history.map((date) => ({ date, type: '早起打卡', detail: `打卡时间 ${state.morning.checkedInAt ?? '06:40'}` })),
-        ...(state.sleep.wakeAt ? [{ date: todayKey(), type: '睡眠打卡', detail: `入睡 ${state.sleep.sleepAt ?? '--:--'}，起床 ${state.sleep.wakeAt ?? '--:--'}` }] : []),
-        ...(state.work.tasks.length ? [{ date: todayKey(), type: '工作计划', detail: `完成 ${completedWorkTasks}/${state.work.tasks.length} 项，完成率 ${state.work.completionRate}%` }] : []),
-        ...state.customCheckIns.flatMap((item) => item.history.map((date) => ({ date, type: item.name, detail: `${item.frequency === 'daily' ? '每日' : item.frequency === 'weekly' ? '每周' : '自定义'}打卡，${date === todayKey() && item.checkedInAt ? `记录时间 ${item.checkedInAt}` : '已完成记录'}` }))),
+        ...state.morning.history.map((date) => ({ date, type: '早起打卡', detail: date === state.lastActiveDate && state.morning.checkedInAt ? `打卡时间 ${state.morning.checkedInAt}` : '已完成早起打卡' })),
+        ...state.sleep.last7Days.map((item) => ({ date: `2026-${item.date}`, type: '睡眠打卡', detail: `入睡 ${item.sleepTime}，起床 ${item.wakeTime}，睡眠 ${Math.floor(item.durationMinutes / 60)}小时${item.durationMinutes % 60}分钟` })),
+        ...(state.work.checkedIn ? [{ date: state.lastActiveDate, type: '工作计划', detail: `完成 ${completedWorkTasks}/${state.work.tasks.length} 项，完成率 ${state.work.completionRate}%` }] : []),
+        ...state.customCheckIns.flatMap((item) => item.history.map((date) => ({ date, type: item.name, detail: `${item.frequency === 'daily' ? '每日' : item.frequency === 'weekly' ? '每周' : '自定义'}打卡，${date === state.lastActiveDate && item.checkedInAt ? `记录时间 ${item.checkedInAt}` : '已完成记录'}` }))),
       ].sort((left, right) => right.date.localeCompare(left.date)),
-    [completedWorkTasks, state.customCheckIns, state.morning.checkedInAt, state.morning.history, state.sleep.sleepAt, state.sleep.wakeAt, state.work.completionRate, state.work.tasks.length],
+    [completedWorkTasks, state.customCheckIns, state.lastActiveDate, state.morning.checkedInAt, state.morning.history, state.sleep.last7Days, state.work.checkedIn, state.work.completionRate, state.work.tasks.length],
   );
 
   const medals = [
